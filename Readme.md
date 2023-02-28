@@ -1,4 +1,8 @@
-FOLDER STRUCTURE
+## README
+
+Repository for bellabeat case study
+
+### FOLDER STRUCTURE
 
 code
   - meta file bellabeat.R
