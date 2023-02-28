@@ -1,0 +1,12 @@
+Package: bellabeat
+Title: Bellabeat Case Study Package
+Version: 0.0.0.9000
+Author: Simon Müller
+Maintainer: Simon Müller <mueller.si@outlook.com>
+Description: Contains functions for preparing, processing and analyzing
+    the bellabeat case study.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
