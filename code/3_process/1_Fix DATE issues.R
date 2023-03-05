@@ -15,13 +15,14 @@ daily_calories_v2 <- select(daily_calories_v2, -'ActivityDay')
 daily_intensities_v2 <- select(daily_intensities_v2, -'ActivityDay')
 daily_steps_v2 <- select(daily_steps_v2, -'ActivityDay')
 
+
 # Rename new Date columns
 daily_activity_v2 <- rename(daily_activity_v2, 'ActivityDate' = 'ActivityDateFixed')
 daily_calories_v2 <- rename(daily_calories_v2, 'ActivityDay' = 'ActivityDayFixed')
 daily_intensities_v2 <- rename(daily_intensities_v2, 'ActivityDay' = 'ActivityDayFixed')
 daily_steps_v2 <- rename(daily_steps_v2, 'ActivityDay' = 'ActivityDayFixed')
 
-# Put new column in 2nd position 
+# Put new column in 2nd position
 
 ## GROUP B: mm/dd/yyyy h:mm:ss am/pm
 # Create fixed columns: CHARACTER to DATE
@@ -113,10 +114,10 @@ sleep_day_v2 <- rename(sleep_day_v2, 'SleepDay' = 'SleepDayFixed')
 weight_log_info_v2 <- rename(weight_log_info_v2, 'Date' = 'DateFixed')
 
 # Put new column in 2nd position (Just mark how to do it)
-daily_activity_v2 <- daily_activity_v2 %>% 
+daily_activity_v2 <- daily_activity_v2 %>%
 relocate(ActivityDate, .after = Id)
 
-minute_calories_wide_v2 <- minute_calories_wide_v2 %>% 
+minute_calories_wide_v2 <- minute_calories_wide_v2 %>%
   relocate(ActivityHour, .after = Id)
 
 
