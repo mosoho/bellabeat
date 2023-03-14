@@ -7,6 +7,9 @@ daily_merged <-
   daily_activity %>%
   full_join(sleep_day, by = c('Id'='Id', 'ActivityDate'='SleepDay'))
 
+# Clean up old tables
+rm(daily_activity, sleep_day)
+
 # Renaming columns for readability
 daily_merged <-
   daily_merged %>%

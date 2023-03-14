@@ -14,5 +14,7 @@ source("code/3_process/4_Reformat_minute_sleep.R")
 
 # Analyze -----------------------------------------------------------------
 
-source("code/4_analyze/1_plots_day_sleep_day.R")
-source("code/4_analyze/1_plots_day_merged.R")
+source("code/4_analyze/1_plots_daily_sleep_day.R")
+source("code/4_analyze/1_plots_daily_merged.R")
+source("code/4_analyze/1_plots_hourly_merged.R")
+source("code/4_analyze/1_plots_minute_merged.R")
