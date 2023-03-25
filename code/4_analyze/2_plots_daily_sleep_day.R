@@ -1,4 +1,4 @@
-#### PLOTS for identifying trends + MERGING tables
+#### PLOTS for identifying trends
 
 # Check Relation between 'TotalMinutesAsleep' vs 'TotalTimeInBed' ---------
 
@@ -45,7 +45,7 @@ sleep_day %>%
   ggplot(aes(x = SleepDay, y = TotalMinutesAsleep)) +
   geom_point()
 #-> Identify weekdays
-sleep_day$SleepDay_Day <- weekdays(sleep_day$SleepDay)
+sleep_day$SleepDay_Day <- weekdays(mdy_hms(sleep_day$SleepDay))
 #-> Update plot with new variable
 sleep_day %>%
   ggplot(aes(x = SleepDay_Day, y = TotalMinutesAsleep)) +
@@ -55,6 +55,9 @@ sleep_day %>%
   ggplot(aes(x = factor(SleepDay_Day, weekdays(as.Date('1970-01-03') + 1:7)),
              y = TotalMinutesAsleep)) +
   geom_boxplot() +
+  stat_summary(geom="text",fun.y=quantile,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.5), size=3) +
   xlab('Wochentage')
 #-> Specifically filter by Saturday + Sunday
 sleep_day %>%
@@ -104,6 +107,3 @@ sleep_day %>%
 ## Check outliers in Total Time In Bed
 sleep_day <- sleep_day %>%
   arrange(desc(TotalTimeInBed))
-
-## Clean up
-rm(sleep_day_ratio_above1.2)

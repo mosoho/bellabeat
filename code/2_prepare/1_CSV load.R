@@ -3,7 +3,13 @@
 # Load package(s)
 library(tidyverse) # General cleaning package
 library(skimr) # To load some data
-library(lubridate) # As we have to clean up some dates
+library(lubridate) # As some dates have to be cleaned up
+library(scales) # As graph scaling needs to be modified
+library(ggpmisc)
+
+# Load inclusive color palette
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
+                        "#0072B2", "#D55E00", "#CC79A7")
 
 # Load all CSVs
 daily_activity <- read_csv("data/dailyActivity_merged.csv")

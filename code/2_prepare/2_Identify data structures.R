@@ -30,3 +30,10 @@ view_into(minute_steps_narrow)
 view_into(minute_steps_wide)
 view_into(sleep_day)
 view_into(weight_log_info)
+
+# Look for duplicates
+sum(duplicated(daily_merged)) # 3
+sum(duplicated(heartrate_seconds)) # 0
+sum(duplicated(hourly_merged)) # 0
+sum(duplicated(minute_merged)) # 543
+sum(duplicated(weight_log_info)) # 0

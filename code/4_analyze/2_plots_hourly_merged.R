@@ -1,19 +1,5 @@
-# MERGE -------------------------------------------------------------------
-
-hourly_merged <- hourly_calories %>%
-  full_join(hourly_intensities, by = c('Id', 'ActivityHour')) %>%
-  full_join(hourly_steps, by = c('Id', 'ActivityHour'))
-
-# Clean up
-
-rm(hourly_calories, hourly_intensities, hourly_steps)
-
-
 # by Hour of Day: TotalIntensity ----------------------------------------------------------
 
-#-> Identify and Store Hour of Day
-hourly_merged$Hour <- format(as.POSIXct(hourly_merged$ActivityHour),
-                             format = "%H")
 
 #-> Add plot, sorted by Hours of day
 hourly_merged %>%
@@ -28,15 +14,27 @@ hourly_merged %>%
 #Check mean of TotalIntensity by Hour
 intensity_by_hour <- hourly_merged %>%
   group_by(Hour) %>%
-  summarise(Mean = mean(TotalIntensity), SD = sd(TotalIntensity))
+  summarise(Mean = mean(TotalIntensity), SD = sd(TotalIntensity), Median = median(TotalIntensity))
 
 intensity_by_hour %>%
   ggplot(aes(x = Hour,
              y = Mean)) +
-  geom_col()
+  geom_col() +
+  labs(x = "TotalIntensity by Hour")
 
-# Highest intensity collected daily is reached between 5 and 7pm with # 21 - 22
-# Lowest from 12pm to 4am with 0.5 - 2
+intensity_by_hour %>%
+  ggplot(aes(x = Hour,
+             y = Median)) +
+  geom_col() +
+  labs(x = "TotalIntensity by Hour")
+
+
+# MEAN
+# Highest intensity collected daily is reached between 5 and 7pm with means
+# 21 - 22. Lowest from 12pm to 4am with means 0.5 - 2
+# MEDIAN
+# Highest intensity collected daily is reached between 5 and 6pm with medians
+# 16. Lowest from 11pm to 6am with median 0.
 
 #cleanup
 rm(intensity_by_hour)
@@ -53,18 +51,20 @@ hourly_merged %>%
 
 # Skip to next graph
 
-#Check mean of Calories by Hour
+#Check AVG of Calories by Hour
 calories_by_hour <- hourly_merged %>%
   group_by(Hour) %>%
-  summarise(Mean = mean(Calories), SD = sd(Calories))
+  summarise(Mean = mean(Calories), SD = sd(Calories), Median = median(Calories))
 
 calories_by_hour %>%
   ggplot(aes(x = Hour,
-             y = Mean)) +
-  geom_col()
+             y = Median)) +
+  geom_col() +
+  labs(x = 'Hours', y = 'Median of Calories')
 
-# Lowest calories 67.5 burned is at 4am. Highest at 6pm with 123.5. So even in
-# sleep users burn half of maximum calories that can be burned.
+# Finding: Lowest calories with 65 to 75 between 11pm and 7am. Highest with
+#          98 to 103 at 4 to 6pm. So even in sleep users burn half of maximum
+#          calories that can be burned.
 
 #cleanup
 rm(calories_by_hour)
@@ -82,19 +82,31 @@ hourly_merged %>%
 
 # Similar findings as by hour, so skip
 
-#Check mean of StepTotal by Hour
+#Check stats of StepTotal by Hour
 steptotal_by_hour <- hourly_merged %>%
   group_by(Hour) %>%
-  summarise(Mean = mean(StepTotal), SD = sd(StepTotal))
+  summarise(Mean = mean(StepTotal), SD = sd(StepTotal), Median = median(StepTotal))
 
 steptotal_by_hour %>%
   ggplot(aes(x = Hour,
              y = Mean)) +
-  geom_col()
+  geom_col() +
+  labs(y = 'Mean of StepTotal')
 
 # Highest StepTotal collected daily is reached between 12 and 7pm with
 # 538 to 599, however with a dip at 3 and 4pm up to 406
 # Lowest from 12pm to 4am with 6.4 - 43.8
+
+steptotal_by_hour %>%
+  ggplot(aes(x = Hour,
+             y = Median)) +
+  geom_col() +
+  labs(y = 'Median of StepTotal')
+
+# First local maxima of StepTotal collected daily is reached between 12 and 1pm
+# with X, second local and global maxima is between 4-7pm with X. And median of
+# 0 StepTotal from 11pm to 6am.
+
 
 #cleanup
 rm(steptotal_by_hour)
@@ -103,8 +115,7 @@ rm(steptotal_by_hour)
 
 # by Day & Week(end): TotalIntensity --------------------------------------------------
 
-#-> Identify weekdays
-hourly_merged$Day <- weekdays(hourly_merged$ActivityHour)
+
 #-> Add plot, sorted by days of week (Sunday to Saturday)
 hourly_merged %>%
   ggplot(aes(x = factor(Day, weekdays(as.Date('1970-01-03') + 1:7)),
@@ -117,13 +128,19 @@ hourly_merged %>%
 #Check mean of TotalIntensity by Day
 intensity_by_day <- hourly_merged %>%
   group_by(Day) %>%
-  summarise(Mean = mean(TotalIntensity), SD = sd(TotalIntensity))
+  summarise(Mean = mean(TotalIntensity), SD = sd(TotalIntensity), Median = median(TotalIntensity))
 
 intensity_by_day %>%
   ggplot(aes(x = factor(Day, weekdays(as.Date('1970-01-03') + 1:7)),
              y = Mean)) +
   geom_col() +
-  xlab('Woche')
+  labs(x = 'Week', y = 'Mean of TotalIntensity')
+
+intensity_by_day %>%
+  ggplot(aes(x = factor(Day, weekdays(as.Date('1970-01-03') + 1:7)),
+             y = Median)) +
+  geom_col() +
+  labs(x = 'Week', y = 'Median of TotalIntensity')
 
 # In general similar levels of high intensity. Pattern of increasing levels
 # from Sunday to Tuesday, then drop on Wednesday, followed by increase until
@@ -133,17 +150,6 @@ intensity_by_day %>%
 #cleanup
 rm(intensity_by_day)
 
-#-> Group by week & weekend
-# Add Days to group "weekend" or "week"
-hourly_merged$Week <- case_when(
-  hourly_merged$Day == "Samstag" ~ "Weekend",
-  hourly_merged$Day == "Sonntag" ~ "Weekend",
-  hourly_merged$Day == "Montag" ~ "Week",
-  hourly_merged$Day == "Dienstag" ~ "Week",
-  hourly_merged$Day == "Mittwoch" ~ "Week",
-  hourly_merged$Day == "Donnerstag" ~ "Week",
-  hourly_merged$Day == "Freitag" ~ "Week",
-)
 # Display ggplot differentiating between week & weekend
 #-> Check mean of TotalIntensity by Week
 intensity_by_week <- hourly_merged %>%
@@ -161,8 +167,16 @@ intensity_by_week %>%
 #cleanup
 rm(intensity_by_week)
 
+## Check median of TotalIntensity, aggregated on day level
+hourly_total_intensity <- hourly_merged %>%
+  group_by(Id, Date) %>%
+  summarise(IntensitySum = sum(TotalIntensity))
+#-> Median
+median(hourly_total_intensity$IntensitySum)
+#-> 300
 
-
+# Clean Up
+rm(hourly_total_intensity)
 # by Day & Week(end): Calories --------------------------------------------
 library(scales)
 hourly_merged %>%
@@ -190,6 +204,17 @@ calories_by_week %>%
 
 # No significant difference in Calories based on week or weekend
 
+# Generate boxplot per Day of Week
+hourly_merged %>%
+  ggplot(aes(x = factor(Day, weekdays(as.Date('1970-01-03') + 1:7)),
+             y = Calories)) +
+  geom_boxplot(outlier.shape = NA) +
+  stat_summary(geom="text",fun.y=quantile,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.5), size=2.5) +
+  geom_jitter(color="red", size = 1, alpha = 0.1, width = 0.3) +
+  xlab('Weekdays')
+
 #cleanup
 rm(calories_by_week)
 
@@ -204,7 +229,8 @@ hourly_merged %>%
 # Identify sum, mean and sd of StepTotal by Day
 steps_by_day <- hourly_merged %>%
   group_by(Day) %>%
-  summarise(Sum = sum(StepTotal), Mean = mean(StepTotal), SD = sd(StepTotal))
+  summarise(Sum = sum(StepTotal), Mean = mean(StepTotal), SD = sd(StepTotal),
+            Median = median(StepTotal))
 
 # Overall steps collected highest on Tuesday (1,204k) and lowest on
 # Sunday (835k)
@@ -213,11 +239,17 @@ steps_by_day %>%
   ggplot(aes(x = factor(Day, weekdays(as.Date('1970-01-03') + 1:7)),
              y = Mean)) +
   geom_col() +
-  ylab('TotalSteps') +
-  xlab('Woche')
+  ylab('Mean of TotalSteps') +
+  xlab('Week')
+# MEAN: Saturday highest with 344 and Sunday lowest with 288
 
-# Saturday highest with 344 and Sunday lowest with 288
-
+steps_by_day %>%
+  ggplot(aes(x = factor(Day, weekdays(as.Date('1970-01-03') + 1:7)),
+             y = Median)) +
+  geom_col() +
+  ylab('Median of TotalSteps') +
+  xlab('Week')
+# MEDIAN: Sunday lowest, Friday highest
 
 #-> Group by week & weekend
 # Identify sum, mean and sd of StepTotal by Week
@@ -239,7 +271,7 @@ steps_by_week %>%
 #Clean Up
 rm(steps_by_day, steps_by_week)
 
-# Calories ------------------- ---------------------------------------------
+# Calories vs... ---------------------------------------------------------
 
 ## vs. TotalIntensity
 hourly_merged %>%
@@ -272,7 +304,7 @@ cor(hourly_merged$Calories, hourly_merged$StepTotal)
 
 
 
-# Steptotal ---------------------------------------------------------------
+# Steptotal vs... ----------------------------------------------------------
 
 #TotalIntensity
 hourly_merged %>%
@@ -288,13 +320,54 @@ hourly_merged %>%
 
 #Seems like a linear connection that all increases
 
-# Intensities -------------------------------------------------------------
+# Intensities vs... --------------------------------------------------------
 
-
-
-
+## Check how it behaves against Average Intensity
 hourly_merged %>%
   ggplot(aes(x = TotalIntensity, y = AverageIntensity)) +
   geom_point() +
   geom_smooth()
 # AverageIntensity is TotalIntensity / 60. So its the intensity by minute
+
+## Analyse internal value distributions
+hourly_merged %>%
+  ggplot(aes(y = TotalIntensity)) +
+  geom_boxplot(outlier.alpha = 0.1)
+
+quantile(hourly_merged$TotalIntensity, na.rm = TRUE)
+
+ncol(t(subset(hourly_merged, !is.na(TotalIntensity))))
+#Finding: 16,574.25 of 22,099 TotalIntensity collected (75%) ranged from 0 to 16
+
+hourly_merged %>%
+  ggplot(aes(x = TotalIntensity)) +
+  geom_histogram(binwidth = 20) +
+  stat_bin(binwidth = 20, geom="text", aes(label = ..count..),
+           vjust = -1)
+#Finding: 21,097 out of 22,099 TotalIntensity collected (95,47%) ranged from 0 to 50
+
+# Calories: Singular analysis ---------------------------------------------
+
+hourly_merged %>%
+  ggplot(aes(x = Calories)) +
+  geom_histogram()
+# Strongly skewed to right -> Use median as average
+
+quantile(hourly_merged$Calories)
+
+# StepTotal: Singular analysis --------------------------------------------
+
+hourly_merged %>%
+  ggplot(aes(x = StepTotal)) +
+  geom_histogram()
+# Strongly skewed to right -> Use median as average
+
+## Analyse internal value distributions
+hourly_merged %>%
+  ggplot(aes(y = StepTotal)) +
+  geom_boxplot(outlier.alpha = 0.1)
+
+quantile(hourly_merged$StepTotal, na.rm = TRUE)
+
+ncol(t(subset(hourly_merged, !is.na(StepTotal))))
+
