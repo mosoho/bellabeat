@@ -17,3 +17,6 @@ data
 intro + notes
   - intro: case study PDF
   - notes: documentation in separate Google Docs
+
+plots
+  - all plots generated during analyze phase
