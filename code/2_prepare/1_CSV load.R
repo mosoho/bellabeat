@@ -2,10 +2,11 @@
 
 # Load package(s)
 library(tidyverse) # General cleaning package
-library(skimr) # To load some data
-library(lubridate) # As some dates have to be cleaned up
-library(scales) # As graph scaling needs to be modified
-library(ggpmisc)
+library(skimr) # To be able to load some data into session
+library(lubridate) # To be able to work with dates more easily
+library(scales) # For improved customization for ggplot scaling
+library(ggpmisc) # Also for improving ggplot scaling
+
 
 # Load inclusive color palette
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",

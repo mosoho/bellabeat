@@ -1,5 +1,7 @@
 # daily: merged -----------------------------------------------------------
 ## MERGING tables
+
+
 # daily_activity + sleep_day = daily_merged
 
 daily_merged <-
@@ -8,12 +10,6 @@ daily_merged <-
 
 # Clean up old tables
 rm(daily_activity, sleep_day)
-
-# Renaming columns for readability
-daily_merged <-
-  daily_merged %>%
-  rename(Day = SleepDay_Day) %>%
-  rename(Weekday = SleepDay_Group)
 
 # Filling days + weekdays of daily_activity rows for newly added rows
 #-> days
@@ -30,25 +26,11 @@ daily_merged$Weekday <- case_when(
   daily_merged$Day == "Freitag" ~ "Week",
 )
 
-#-> Translate to English
-daily_merged$Day <- case_when(
-  daily_merged$Day == "Samstag" ~ "Saturday",
-  daily_merged$Day == "Sonntag" ~ "Sunday",
-  daily_merged$Day == "Montag" ~ "Monday",
-  daily_merged$Day == "Dienstag" ~ "Tuesday",
-  daily_merged$Day == "Mittwoch" ~ "Wednesday",
-  daily_merged$Day == "Donnerstag" ~ "Thursday",
-  daily_merged$Day == "Freitag" ~ "Friday",
-)
-
 # Adding date to column
 daily_merged$Date <- date(daily_merged$ActivityDate)
 
 # Add column for week of the year
 daily_merged$WeekISO <- isoweek(daily_merged$Date)
-#->Relocate
-daily_merged <- daily_merged %>%
-  relocate(WeekISO, .after = Date)
 
 # Rearranging table for readability
 daily_merged <- daily_merged %>%
@@ -57,6 +39,10 @@ daily_merged <- daily_merged %>%
   relocate(Date, .after = ActivityDate)
 
 daily_merged <- arrange(daily_merged, Id, ActivityDate)
+
+#->Relocate
+daily_merged <- daily_merged %>%
+  relocate(WeekISO, .after = Date)
 
 # hourly ------------------------------------------------------------------
 ## MERGE

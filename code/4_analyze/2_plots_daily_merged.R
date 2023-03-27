@@ -1,5 +1,128 @@
 #### PLOTS for identifying trends
 
+# 'TotalMinutesAsleep' vs 'TotalTimeInBed'  ----------------------------------
+ggplot(data = daily_merged, mapping = aes(x = TotalMinutesAsleep, y = TotalTimeInBed)) +geom_point()
+# Outliers. Highlight them for better visualization
+# -> Filter everything thats above a certain ratio
+daily_merged$RatioBedVsAsleep <- daily_merged$TotalTimeInBed / daily_merged$TotalMinutesAsleep
+# -> Sort by ratio in descending order
+daily_merged <- daily_merged %>%
+  arrange(desc(RatioBedVsAsleep))
+# -> Check median to find useful threshold -> 1.2
+summary(daily_merged$RatioBedVsAsleep)
+# -> Filter by 1.2
+daily_merged_ratio_above1.2 <- daily_merged %>%
+  filter(RatioBedVsAsleep>=1.2)
+# Display highlight on ggplot to check if all outliers are identified
+daily_merged %>%
+  ggplot(aes(x = TotalMinutesAsleep, y = TotalTimeInBed)) +
+  geom_point(alpha=0.3) +
+  geom_point(data = daily_merged_ratio_above1.2,
+             aes(x = TotalMinutesAsleep, y = TotalTimeInBed),
+             color = 'red')
+# -> All these people spend at least 20% time in bed awake. How many are affected?
+nrow(daily_merged_ratio_above1.2)
+#-> 32 entries
+nrow(daily_merged_ratio_above1.2 %>%
+       distinct(Id))
+#-> 3 people. Out of...
+nrow(distinct(daily_merged, Id))
+#-> 24 = 12,5%
+# Clean up
+rm(daily_merged_ratio_above1.2)
+
+# 'SleepDay' vs. 'TotalMinutesAsleep' ---------------------------------------
+
+
+daily_merged %>%
+  ggplot(aes(x = ActivityDate, y = TotalMinutesAsleep)) +
+  geom_point()
+
+#-> Update plot with new variable
+daily_merged %>%
+  ggplot(aes(x = Day, y = TotalMinutesAsleep)) +
+  geom_point()
+#-> Arrange plot to sort by days of week (Sunday to Saturday)
+daily_merged %>%
+  ggplot(aes(x = factor(Day, weekdays(as.Date('1970-01-03') + 1:7)),
+             y = TotalMinutesAsleep)) +
+  geom_boxplot() +
+  stat_summary(geom="text",fun.y=quantile,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.5), size=3) +
+  xlab('Wochentage')
+#-> Specifically filter by Saturday + Sunday
+daily_merged %>%
+  filter(Day %in% c("Samstag", "Sonntag")) %>%
+  ggplot(aes(x = Day,
+             y = TotalMinutesAsleep)) +
+  geom_boxplot(width = 0.6, outlier.shape = NA) +
+  stat_summary(geom="text",fun.y=quantile,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.362), size=3.5) +
+  geom_jitter(color="red", size = 1, alpha = 0.5, width = 0.3) +
+  xlab('Wochentage')
+
+
+
+#-> Group by week & weekend
+# Display ggplot differentiating between week & weekend
+daily_merged %>%
+  ggplot(aes(x = Weekday,
+             y = TotalMinutesAsleep)) +
+  geom_boxplot(width = 0.6, outlier.shape = NA) +
+  stat_summary(geom="text",fun.y=quantile,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.362), size=3.5) +
+  geom_jitter(color="red", size = 1, alpha = 0.3, width = 0.3) +
+  xlab('Week vs Weekend') +
+  ylab('Minutes Asleep')
+# Now with minutes in bed
+daily_merged %>%
+  ggplot(aes(x = Weekday,
+             y = TotalTimeInBed)) +
+  geom_boxplot(width = 0.6, outlier.shape = NA) +
+  stat_summary(geom="text",fun.y=quantile,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.362), size=3.5) +
+  geom_jitter(color="red", size = 1, alpha = 0.3, width = 0.3) +
+  xlab('Week vs Weekend') +
+  ylab('Minutes in Bed')
+
+## Check outliers in Total Time In Bed
+daily_merged <- daily_merged %>%
+  arrange(desc(TotalTimeInBed))
+
+
+
+#-> Group by week & weekend
+# Display ggplot differentiating between week & weekend
+daily_merged %>%
+  ggplot(aes(x = Weekday,
+             y = TotalMinutesAsleep)) +
+  geom_boxplot(width = 0.6, outlier.shape = NA) +
+  stat_summary(geom="text",fun.y=quantile,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.362), size=3.5) +
+  geom_jitter(color="red", size = 1, alpha = 0.3, width = 0.3) +
+  xlab('Week vs Weekend') +
+  ylab('Minutes Asleep')
+# Now with minutes in bed
+daily_merged %>%
+  ggplot(aes(x = Weekday,
+             y = TotalTimeInBed)) +
+  geom_boxplot(width = 0.6, outlier.shape = NA) +
+  stat_summary(geom="text",fun.y=quantile,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.362), size=3.5) +
+  geom_jitter(color="red", size = 1, alpha = 0.3, width = 0.3) +
+  xlab('Week vs Weekend') +
+  ylab('Minutes in Bed')
+
+## Check outliers in Total Time In Bed
+daily_merged <- daily_merged %>%
+  arrange(desc(TotalTimeInBed))
+
 # TotalSteps vs. Total Distance -------------------------------------------
 
 
