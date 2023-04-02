@@ -4,6 +4,10 @@
 
 Repository for bellabeat case study
 
+### Results
+
+You can find my presentation of this project's results at <a href="https://www.kaggle.com/code/mosoho/bellabeat-case-study-a-deep-dive">Kaggle</a>
+
 ### Folder Structure
 
 code
